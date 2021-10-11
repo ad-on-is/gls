@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"fmt"
 	"os/exec"
 	"strings"
 
@@ -8,35 +9,34 @@ import (
 )
 
 func ApplyGitStatus(items *[]fileinfos.Item) {
-	m := getByStatus("m")
-	d := getByStatus("d")
-	o := getByStatus("o")
 
-	statuses := append(append(m, d...), o...)
-
+	c := exec.Command("git", "status", "--porcelain", "-u")
+	o, _ := c.Output()
+	s := string(o)
+	statuses := strings.Split(s, "\n")
 	i := 0
 	for _, item := range *items {
 
 		for _, status := range statuses {
-			if strings.HasPrefix(status, item.Name) || strings.HasPrefix(status, item.Root+item.Name) {
-				item.GitStatus = parseStatus(&status)
-				(*items)[i].GitStatus = parseStatus(&status)
+			if status == "" {
+				continue
+			}
+			s, f := parseStatus(&status)
+			fmt.Println(f)
+			fmt.Println(clean(item.Root + item.Name))
+			if strings.HasPrefix(f, clean(item.Name)) || strings.HasPrefix(f, clean(item.Root+item.Name)) {
+				(*items)[i].GitStatus = strings.ReplaceAll(s, "??", "U")
 			}
 		}
 		i++
 	}
 }
 
-func parseStatus(output *string) string {
-	ss := strings.Split(*output, ":")
-	return ss[len(ss)-1]
+func clean(s string) string {
+	return strings.ReplaceAll(s, "./", "")
 }
 
-func getByStatus(status string) []string {
-	c := exec.Command("git", "ls-files", "-"+status)
-	o, _ := c.Output()
-	s := string(o)
-	s = strings.ReplaceAll(s, "\n", ":"+strings.ToUpper(strings.ReplaceAll(status, "o", "u"))+"\n")
-	lines := strings.Split(s, "\n")
-	return lines
+func parseStatus(status *string) (string, string) {
+	split := strings.Split(strings.TrimLeft(*status, " "), " ")
+	return split[0], split[1]
 }

@@ -165,7 +165,7 @@ func Short(items *[]fileinfos.Item, config *settings.Config) {
 		if !config.ShowAll && strings.HasPrefix(item.Name, ".") {
 			continue
 		}
-		colStrings = append(colStrings, itemName(&item, &theme, false))
+		colStrings = append(colStrings, itemName(&item, &theme, false)+" "+colorizer.Parse(gitPrefix(item.GitStatus, &theme), gitColor(item.GitStatus, &theme)))
 
 	}
 	textcol.PrintColumns(&colStrings, 2)

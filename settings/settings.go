@@ -14,28 +14,33 @@ type Config struct {
 	ShowAll   bool
 	ShowGroup bool
 	ShowOctal bool
+	ShowGit   bool
 	DirsFirst bool
 }
 
 type Theme struct {
-	DateFormat               string `json:"dateFormat"`
-	FolderSuffix             string `json:"folderSuffix"`
-	FolderPrefix             string `json:"folderPrefix"`
-	ExeSuffix                string `json:"exeSuffix"`
-	ExePrefix                string `json:"exePrefix"`
-	SpecialColorizeLinks     bool   `json:"specialColorizeLinks"`
-	DimSpecialColorizeLinks  bool   `json:"dimSpecialColorizeLinks"`
-	SpecialColorizeDirs      bool   `json:"specialColorizeDirs"`
-	SpecialColorizeFiles     bool   `json:"specialColorizeFiles"`
-	SpecialColorizeDirIcons  bool   `json:"specialColorizeDirIcons"`
-	SpecialColorizeFileIcons bool   `json:"specialColorizeFileIcons"`
-	Colors                   Colors `json:"colors"`
+	DateFormat               string    `json:"dateFormat"`
+	FolderSuffix             string    `json:"folderSuffix"`
+	FolderPrefix             string    `json:"folderPrefix"`
+	ExeSuffix                string    `json:"exeSuffix"`
+	ExePrefix                string    `json:"exePrefix"`
+	SpecialColorizeLinks     bool      `json:"specialColorizeLinks"`
+	DimSpecialColorizeLinks  bool      `json:"dimSpecialColorizeLinks"`
+	SpecialColorizeDirs      bool      `json:"specialColorizeDirs"`
+	SpecialColorizeFiles     bool      `json:"specialColorizeFiles"`
+	SpecialColorizeDirIcons  bool      `json:"specialColorizeDirIcons"`
+	SpecialColorizeFileIcons bool      `json:"specialColorizeFileIcons"`
+	ColorizeGitIcon          bool      `json:"colorizeGitIcon"`
+	ColorizeGitName          bool      `json:"colorizeGitName"`
+	Colors                   Colors    `json:"colors"`
+	GitPrefix                GitPrefix `json:"gitPrefix"`
 }
 
 type Colors struct {
 	OctalPermissions string           `json:"octalPermissions"`
 	Permissions      PermissionColors `json:"permissions"`
 	Symlink          SymlinkColors    `json:"symlink"`
+	Git              GitColors        `json:"git"`
 	Size             string           `json:"size"`
 	User             string           `json:"user"`
 	Group            string           `json:"group"`
@@ -56,6 +61,18 @@ type PermissionColors struct {
 	R      string `json:"r"`
 	W      string `json:"w"`
 	X      string `json:"x"`
+}
+
+type GitColors struct {
+	M string `json:"m"`
+	D string `json:"d"`
+	U string `json:"u"`
+}
+
+type GitPrefix struct {
+	M string `json:"m"`
+	D string `json:"d"`
+	U string `json:"u"`
 }
 
 type SymlinkColors struct {
@@ -85,6 +102,8 @@ func GetConfig() Config {
 		SpecialColorizeFiles:     true,
 		SpecialColorizeDirIcons:  true,
 		SpecialColorizeFileIcons: true,
+		ColorizeGitIcon:          true,
+		ColorizeGitName:          true,
 		Colors: Colors{
 			OctalPermissions: "gray",
 			Permissions: PermissionColors{
@@ -97,6 +116,11 @@ func GetConfig() Config {
 			Symlink: SymlinkColors{
 				Arrow: "gray",
 				Link:  "blue",
+			},
+			Git: GitColors{
+				M: "yellow",
+				D: "red",
+				U: "green",
 			},
 			Size:            "white",
 			User:            "white",

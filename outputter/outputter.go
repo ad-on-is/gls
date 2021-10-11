@@ -13,10 +13,13 @@ import (
 	"github.com/juju/ansiterm/tabwriter"
 )
 
+// test
+
 func Long(items *[]fileinfos.Item, config *settings.Config) {
 
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 0, 2, ' ', 0)
+
 	fmt.Fprintln(w)
 	for _, item := range sorter.Sort(items, config) {
 		if !config.ShowAll && strings.HasPrefix(item.Name, ".") {
@@ -33,11 +36,45 @@ func Long(items *[]fileinfos.Item, config *settings.Config) {
 		if config.ShowGroup {
 			out += colorizer.Parse(item.Group, theme.Colors.Group) + "\t"
 		}
-		out += colorizer.Parse(item.HumanDate(theme.DateFormat), theme.Colors.Date) + "\t" + itemName(&item, &theme, true)
+
+		out += colorizer.Parse(item.HumanDate(theme.DateFormat), theme.Colors.Date) + "\t"
+
+		if config.ShowGit {
+			out += colorizer.Parse(gitPrefix(item.GitStatus, &theme), gitColor(item.GitStatus, &theme))
+			out += "\t"
+
+		}
+
+		out += itemName(&item, &theme, true)
+
 		fmt.Fprintln(w,
 			out)
 	}
 	w.Flush()
+}
+
+func gitColor(status string, theme *settings.Theme) string {
+	switch status {
+	case "M":
+		return theme.Colors.Git.M
+	case "D":
+		return theme.Colors.Git.D
+	case "U":
+		return theme.Colors.Git.U
+	}
+	return "white"
+}
+
+func gitPrefix(status string, theme *settings.Theme) string {
+	switch status {
+	case "M":
+		return theme.GitPrefix.M
+	case "D":
+		return theme.GitPrefix.D
+	case "U":
+		return theme.GitPrefix.U
+	}
+	return ""
 }
 
 func itemName(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string {
@@ -53,30 +90,49 @@ func itemName(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) str
 	linkOut := ""
 
 	if item.IsDir {
-		if theme.SpecialColorizeDirIcons && special != "" {
-			icnOut = colorizer.RGB(icn.GetGlyph(), specialColor)
+		if theme.ColorizeGitIcon {
+			icnOut = colorizer.Parse(icn.GetGlyph(), gitColor(item.GitStatus, theme))
 		} else {
-			icnOut = colorizer.Parse(icn.GetGlyph(), theme.Colors.DirIcon)
+			if theme.SpecialColorizeDirIcons && special != "" {
+				icnOut = colorizer.RGB(icn.GetGlyph(), specialColor)
+			} else {
+				icnOut = colorizer.Parse(icn.GetGlyph(), theme.Colors.DirIcon)
+			}
 		}
-		if theme.SpecialColorizeDirs && special != "" {
-			nameOut = colorizer.RGB(item.Name, specialColor)
+
+		if theme.ColorizeGitName {
+			nameOut = colorizer.Parse(item.Name, gitColor(item.GitStatus, theme))
 		} else {
-			nameOut = colorizer.Parse(item.Name, theme.Colors.DirName)
+			if theme.SpecialColorizeDirs && special != "" {
+				nameOut = colorizer.RGB(item.Name, specialColor)
+			} else {
+				nameOut = colorizer.Parse(item.Name, theme.Colors.DirName)
+			}
 		}
+
 		nameOut = colorizer.Parse(theme.FolderPrefix, theme.Colors.FolderIndicator) + nameOut + colorizer.Parse(theme.FolderSuffix, theme.Colors.FolderIndicator)
 	}
 
 	if !item.IsDir {
 
-		if theme.SpecialColorizeFileIcons && special != "" {
-			icnOut = colorizer.RGB(icn.GetGlyph(), specialColor)
+		if theme.ColorizeGitIcon {
+			icnOut = colorizer.Parse(icn.GetGlyph(), gitColor(item.GitStatus, theme))
 		} else {
-			icnOut = colorizer.Parse(icn.GetGlyph(), theme.Colors.FileIcon)
+			if theme.SpecialColorizeFileIcons && special != "" {
+				icnOut = colorizer.RGB(icn.GetGlyph(), specialColor)
+			} else {
+				icnOut = colorizer.Parse(icn.GetGlyph(), theme.Colors.FileIcon)
+			}
 		}
-		if theme.SpecialColorizeFiles && special != "" {
-			nameOut = colorizer.RGB(item.Name, specialColor)
+
+		if theme.ColorizeGitName {
+			nameOut = colorizer.Parse(item.Name, gitColor(item.GitStatus, theme))
 		} else {
-			nameOut = colorizer.Parse(item.Name, theme.Colors.FileName)
+			if theme.SpecialColorizeFiles && special != "" {
+				nameOut = colorizer.RGB(item.Name, specialColor)
+			} else {
+				nameOut = colorizer.Parse(item.Name, theme.Colors.FileName)
+			}
 		}
 
 		if item.IsExecutable {

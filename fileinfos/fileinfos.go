@@ -17,6 +17,7 @@ import (
 
 type Item struct {
 	Permissions   os.FileMode
+	Root          string
 	User          string
 	Group         string
 	Size          int64
@@ -31,6 +32,7 @@ type Item struct {
 	LinkName      string
 	Extension     string
 	LinkExtension string
+	GitStatus     string
 }
 
 func (i *Item) Icon() (string, *iconizer.Icon_Info) {
@@ -94,7 +96,7 @@ func (i *Item) OctalPermissions() string {
 func (i *Item) HumanSize() string {
 	const unit = 1000
 	if i.Size == 0 {
-		return "-"
+		return "  -  "
 	}
 	if i.Size < unit {
 		return fmt.Sprintf("%dB", i.Size)
@@ -131,6 +133,7 @@ func GetItems(path string) []Item {
 		item.Name = file.Name()
 		item.IsHidden = strings.HasPrefix(item.Name, ".")
 		item.User = uname
+		item.Root = path
 		item.Group = gname
 		item.Size = file.Size()
 		item.Permissions = file.Mode()

@@ -37,7 +37,7 @@ func main() {
 	items := fileinfos.GetItems(*path)
 
 	if config.ShowGit {
-		plugins.ApplyGitStatus(&items)
+		plugins.ApplyGitStatus(&items, path)
 	}
 
 	if *long {

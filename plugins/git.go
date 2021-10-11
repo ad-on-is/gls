@@ -1,16 +1,14 @@
 package plugins
 
 import (
-	"fmt"
 	"os/exec"
 	"strings"
 
 	"github.com/ad-on-is/gls/fileinfos"
 )
 
-func ApplyGitStatus(items *[]fileinfos.Item) {
-
-	c := exec.Command("git", "status", "--porcelain", "-u")
+func ApplyGitStatus(items *[]fileinfos.Item, path *string) {
+	c := exec.Command("git", "-C", *path, "status", "--porcelain", "-u")
 	o, _ := c.Output()
 	s := string(o)
 	statuses := strings.Split(s, "\n")
@@ -21,10 +19,9 @@ func ApplyGitStatus(items *[]fileinfos.Item) {
 			if status == "" {
 				continue
 			}
+			// needs some rework
 			s, f := parseStatus(&status)
-			fmt.Println(f)
-			fmt.Println(clean(item.Root + item.Name))
-			if strings.HasPrefix(f, clean(item.Name)) || strings.HasPrefix(f, clean(item.Root+item.Name)) {
+			if strings.Contains(f, clean(item.Name)) {
 				(*items)[i].GitStatus = strings.ReplaceAll(s, "??", "U")
 			}
 		}

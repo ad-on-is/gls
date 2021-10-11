@@ -1,6 +1,7 @@
 package fileinfos
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"io/ioutil"
@@ -110,9 +111,13 @@ func (i *Item) HumanSize() string {
 		float64(i.Size)/float64(div), "KMGTPE"[exp])
 }
 
-func GetItems(path string) []Item {
+func GetItems(path string) ([]Item, error) {
 	items := []Item{}
-	pathInfo, _ := os.Lstat(path)
+	pathInfo, err := os.Lstat(path)
+
+	if err != nil {
+		return items, errors.New("Path not found")
+	}
 
 	files := []fs.FileInfo{}
 
@@ -161,7 +166,7 @@ func GetItems(path string) []Item {
 		items = append(items, item)
 
 	}
-	return items
+	return items, nil
 }
 
 func getUserGroupNames(stat *syscall.Stat_t) (uname string, gname string) {

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/ad-on-is/gls/colorizer"
 	"github.com/ad-on-is/gls/fileinfos"
 	"github.com/ad-on-is/gls/outputter"
 	"github.com/ad-on-is/gls/plugins"
@@ -34,7 +36,21 @@ func main() {
 
 	// test
 
-	items := fileinfos.GetItems(*path)
+	items, err := fileinfos.GetItems(*path)
+	if err != nil {
+		if config.DisplayInfos {
+			fmt.Println()
+			fmt.Println(colorizer.Parse("  "+*path+" not found", config.Themes[config.Theme].Colors.Info))
+		}
+		os.Exit(0)
+	}
+	if len(items) == 0 {
+		if config.DisplayInfos {
+			fmt.Println()
+			fmt.Println(colorizer.Parse("  Folder is empty", config.Themes[config.Theme].Colors.Info))
+		}
+		os.Exit(0)
+	}
 
 	if config.ShowGit {
 		plugins.ApplyGitStatus(&items, path)

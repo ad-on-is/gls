@@ -1,21 +1,20 @@
 package settings
 
 import (
-	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 )
 
 type Config struct {
-	Themes    map[string]Theme `json:"themes"`
-	Theme     string           `json:"theme"`
-	ShowAll   bool
-	ShowGroup bool
-	ShowOctal bool
-	ShowGit   bool
-	DirsFirst bool
+	Themes       map[string]Theme `json:"themes"`
+	Theme        string           `json:"theme"`
+	DisplayInfos bool             `json:"displayInfos"`
+	ShowAll      bool
+	ShowGroup    bool
+	ShowOctal    bool
+	ShowGit      bool
+	DirsFirst    bool
 }
 
 type Theme struct {
@@ -42,6 +41,7 @@ type Colors struct {
 	Symlink          SymlinkColors    `json:"symlink"`
 	Git              GitColors        `json:"git"`
 	Size             string           `json:"size"`
+	Info             string           `json:"info"`
 	User             string           `json:"user"`
 	Group            string           `json:"group"`
 	Date             string           `json:"date"`
@@ -123,6 +123,7 @@ func GetConfig() Config {
 				U: "green",
 			},
 			Size:            "white",
+			Info:            "gray",
 			User:            "white",
 			Group:           "yellow",
 			Date:            "gray",
@@ -138,19 +139,15 @@ func GetConfig() Config {
 	}
 
 	config := Config{
-		ShowAll:   false,
-		DirsFirst: false,
-		Theme:     "default",
-		Themes:    theme,
+		DisplayInfos: true,
+		ShowAll:      false,
+		DirsFirst:    false,
+		Theme:        "default",
+		Themes:       theme,
 	}
 
 	// var ts Config
 
 	json.Unmarshal(jsonData, &config)
 	return config
-}
-
-func Hex2Byte(s string) string {
-	b, _ := hex.DecodeString(s)
-	return fmt.Sprintf("%d", b)
 }

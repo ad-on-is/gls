@@ -116,7 +116,7 @@ func GetItems(path string) ([]Item, error) {
 	pathInfo, err := os.Lstat(path)
 
 	if err != nil {
-		return items, errors.New("Path not found")
+		return items, errors.New("path not found")
 	}
 
 	files := []fs.FileInfo{}

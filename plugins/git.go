@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"os"
 	"os/exec"
 	"strings"
 
@@ -8,7 +9,13 @@ import (
 )
 
 func ApplyGitStatus(items *[]fileinfos.Item, path *string) {
-	c := exec.Command("git", "-C", *path, "status", "--porcelain", "-u")
+	pathInfo, _ := os.Lstat(*path)
+	gitPath := *path
+	if !pathInfo.IsDir() {
+		ps := strings.Split(*path, "/")
+		gitPath = strings.Join(ps[:len(ps)-1], "/")
+	}
+	c := exec.Command("git", "-C", gitPath, "status", "--porcelain", "-u")
 	o, _ := c.Output()
 	s := string(o)
 	statuses := strings.Split(s, "\n")

@@ -24,8 +24,18 @@ func Long(items *[]fileinfos.Item, config *settings.Config) {
 		}
 
 		theme := config.Themes[config.Theme]
+		out := ""
+
+		if config.ShowOctal {
+			out += colorizer.Parse(item.OctalPermissions(), theme.Colors.OctalPermissions) + "\t"
+		}
+		out += colorizer.Permissions(item.HumanPermissions(), theme.Colors.Permissions) + "\t" + colorizer.Parse(item.HumanSize(), theme.Colors.Size) + "\t" + colorizer.Parse(item.User, theme.Colors.User) + "\t"
+		if config.ShowGroup {
+			out += colorizer.Parse(item.Group, theme.Colors.Group) + "\t"
+		}
+		out += colorizer.Parse(item.HumanDate(theme.DateFormat), theme.Colors.Date) + "\t" + itemName(&item, &theme, true)
 		fmt.Fprintln(w,
-			colorizer.Parse(item.OctalPermissions(), theme.Colors.OctalPermissions)+"\t"+colorizer.Permissions(item.HumanPermissions(), theme.Colors.Permissions)+"\t"+colorizer.Parse(item.HumanSize(), theme.Colors.Size)+"\t"+colorizer.Parse(item.User, theme.Colors.User)+"\t"+colorizer.Parse(item.Group, theme.Colors.Group)+"\t"+colorizer.Parse(item.HumanDate(theme.DateFormat), theme.Colors.Date)+"\t"+itemName(&item, &theme, true))
+			out)
 	}
 	w.Flush()
 }

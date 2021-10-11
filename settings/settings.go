@@ -12,6 +12,8 @@ type Config struct {
 	Themes    map[string]Theme `json:"themes"`
 	Theme     string           `json:"theme"`
 	ShowAll   bool
+	ShowGroup bool
+	ShowOctal bool
 	DirsFirst bool
 }
 

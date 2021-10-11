@@ -14,6 +14,8 @@ var (
 	path      = kingpin.Arg("path", "The path or file to show").Default(".").String()
 	long      = kingpin.Flag("long", "Show long output").Short('l').Bool()
 	all       = kingpin.Flag("all", "Show hidden").Short('a').Bool()
+	group     = kingpin.Flag("group", "Show group next to user").Short('g').Bool()
+	octal     = kingpin.Flag("octal", "Show octal permissions, ie 0755").Short('o').Bool()
 	dirsFirst = kingpin.Flag("dirs-first", "Show directories first").Short('d').Bool()
 )
 
@@ -23,6 +25,8 @@ func main() {
 
 	config := settings.GetConfig()
 	config.ShowAll = *all
+	config.ShowGroup = *group
+	config.ShowOctal = *octal
 	config.DirsFirst = *dirsFirst
 
 	items := fileinfos.GetItems(*path)

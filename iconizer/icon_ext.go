@@ -443,6 +443,8 @@ var Icon_Ext = map[string]*Icon_Info{
 	"ebuild":            Icon_Set["gentoo"],
 	"pkg":               Icon_Set["applescript"],
 	"openbsd":           Icon_Set["freebsd"],
+	"php":               Icon_Set["php"],
+	"php3":              Icon_Set["php"],
 	// "ls":                Icon_Set["livescript"],
 	// "re":                Icon_Set["reason"],
 	// "rei":               Icon_Set["reason"],

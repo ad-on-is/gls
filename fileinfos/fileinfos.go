@@ -16,39 +16,65 @@ import (
 )
 
 type Item struct {
-	Permissions  os.FileMode
-	User         string
-	Group        string
-	Size         int64
-	DateModified int64
-	DateCreated  int64
-	Name         string
-	IsDir        bool
-	IsLink       bool
-	Link         string
-	Extension    string
+	Permissions   os.FileMode
+	User          string
+	Group         string
+	Size          int64
+	DateModified  int64
+	DateCreated   int64
+	Name          string
+	IsDir         bool
+	IsLink        bool
+	IsHidden      bool
+	IsExecutable  bool
+	Link          string
+	LinkName      string
+	Extension     string
+	LinkExtension string
 }
 
-func (i *Item) Icon() *iconizer.Icon_Info {
+func (i *Item) Icon() (string, *iconizer.Icon_Info) {
+
 	if i.IsDir {
 		icon, exists := iconizer.Icon_Set["dir-"+strings.ToLower(strings.ReplaceAll(i.Name, ".", ""))]
 		if exists {
-			return icon
+			return "dir", icon
 		}
-		return iconizer.Icon_Def["dir"]
+		if i.IsLink {
+			icon, exists = iconizer.Icon_Set["dir-"+strings.ToLower(strings.ReplaceAll(i.LinkName, ".", ""))]
+			if exists {
+				return "dir", icon
+			}
+			return "", iconizer.Icon_Def["hiddendir"]
+		}
+
+		return "", iconizer.Icon_Def["diropen"]
+	} else {
+		icon, exists := iconizer.Icon_FileName[strings.ToLower(i.Name)]
+		if exists {
+			return "file", icon
+		}
+		if i.IsLink {
+			icon, exists = iconizer.Icon_FileName[strings.ToLower(i.LinkName)]
+			if exists {
+				return "file", icon
+			}
+		}
+		icon, exists = iconizer.Icon_Ext[i.Extension]
+		if exists {
+			return "ext", icon
+		}
+		if i.IsLink {
+			icon, exists = iconizer.Icon_Ext[i.LinkExtension]
+			if exists {
+				return "ext", icon
+			}
+			return "", iconizer.Icon_Def["hiddenfile"]
+		}
+
+		return "", iconizer.Icon_Def["file"]
 	}
-	// first check if icon for filename is present
-	icon, exists := iconizer.Icon_FileName[strings.ToLower(i.Name)]
-	if exists {
-		return icon
-	}
-	// now check if icon for extension is present
-	icon, exists = iconizer.Icon_Ext[i.Extension]
-	if exists {
-		return icon
-	}
-	// default icon
-	return iconizer.Icon_Def["file"]
+
 }
 
 func (i *Item) HumanDate(layout string) string {
@@ -103,6 +129,7 @@ func GetItems(path string) []Item {
 		stat := file.Sys().(*syscall.Stat_t)
 		uname, gname := getUserGroupNames(stat)
 		item.Name = file.Name()
+		item.IsHidden = strings.HasPrefix(item.Name, ".")
 		item.User = uname
 		item.Group = gname
 		item.Size = file.Size()
@@ -110,11 +137,22 @@ func GetItems(path string) []Item {
 		item.IsDir = file.IsDir()
 		item.DateModified = stat.Mtim.Sec
 		item.Extension = strings.ReplaceAll(filepath.Ext(path+file.Name()), ".", "")
+		item.IsExecutable = file.Mode()&0111 == 0111 && !file.IsDir()
 
 		if file.Mode()&os.ModeSymlink != 0 {
 			item.IsLink = true
-			item.Link, _ = os.Readlink(path + file.Name())
-
+			lnk, _ := os.Readlink(path + file.Name())
+			item.Link = lnk
+			lpath := path
+			if strings.HasPrefix(lnk, "/") || strings.HasPrefix(lnk, "..") {
+				lpath = ""
+			}
+			linkinfo, _ := os.Lstat(lpath + lnk)
+			item.IsDir = linkinfo.IsDir()
+			ss := strings.Split(lnk, "/")
+			item.LinkName = ss[len(ss)-1]
+			item.LinkExtension = strings.ReplaceAll(filepath.Ext(lpath+item.LinkName), ".", "")
+			item.IsHidden = strings.HasPrefix(item.LinkName, ".")
 		}
 
 		items = append(items, item)

@@ -222,6 +222,7 @@ var Icon_Set = map[string]*Icon_Info{
 	"opam":             {i: "\uf1ce", c: [3]uint8{255, 213, 79}},  // opam (Not supported by nerdFont)
 	"pascal":           {i: "\uf8da", c: [3]uint8{3, 136, 209}},   // pascal (Not supported by nerdFont)
 	"nuget":            {i: "\ue77f", c: [3]uint8{3, 136, 209}},   // nuget (Not supported by nerdFont)
+	"php":              {i: "\ue608", c: [3]uint8{50, 121, 128}},  // denizenscript (Not supported by nerdFont)
 	"denizenscript":    {i: "D", c: [3]uint8{255, 213, 79}},       // denizenscript (Not supported by nerdFont)
 	// "riot":             {i:"\u", c:[3]uint8{255, 255, 255}},       // riot
 	// "autoit":           {i:"\u", c:[3]uint8{255, 255, 255}},       // autoit

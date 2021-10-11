@@ -6,6 +6,7 @@ import (
 	"github.com/ad-on-is/gls/fileinfos"
 	"github.com/ad-on-is/gls/outputter"
 	"github.com/ad-on-is/gls/settings"
+	"github.com/jwalton/gchalk"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -17,7 +18,7 @@ var (
 )
 
 func main() {
-
+	gchalk.SetLevel(gchalk.LevelAnsi16m)
 	kingpin.Parse()
 
 	config := settings.GetConfig()

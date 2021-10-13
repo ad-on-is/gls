@@ -34,6 +34,7 @@ type Item struct {
 	Extension     string
 	LinkExtension string
 	GitStatus     string
+	Children      *[]Item
 }
 
 func (i *Item) Icon() (string, *iconizer.Icon_Info) {
@@ -111,62 +112,82 @@ func (i *Item) HumanSize() string {
 		float64(i.Size)/float64(div), "KMGTPE"[exp])
 }
 
-func GetItems(path string) ([]Item, error) {
-	items := []Item{}
-	pathInfo, err := os.Lstat(path)
+func GetItems(path string, all *bool, maxLevel int) (*[]Item, error) {
+
+	rootInfo, err := os.Lstat(path)
 
 	if err != nil {
-		return items, errors.New("path not found")
+		return nil, errors.New("path not found")
 	}
 
-	files := []fs.FileInfo{}
-
-	if pathInfo.IsDir() {
-		if !strings.HasSuffix(path, "/") {
-			path = path + "/"
-		}
-		files, _ = ioutil.ReadDir(path)
-
-	} else {
-		files = append(files, pathInfo)
+	if !rootInfo.IsDir() {
+		items := []Item{}
+		items = append(items, *getItem(rootInfo, path))
+		return &items, nil
 	}
+	level := 1
+	return traverse(path, all, maxLevel, &level), nil
+}
 
+func traverse(path string, all *bool, maxLevel int, level *int) *[]Item {
+
+	cl := *level + 1
+
+	if !strings.HasSuffix(path, "/") {
+		path = path + "/"
+	}
+	files, _ := ioutil.ReadDir(path)
+
+	items := []Item{}
 	for _, file := range files {
-		item := Item{}
-		stat := file.Sys().(*syscall.Stat_t)
-		uname, gname := getUserGroupNames(stat)
-		item.Name = file.Name()
-		item.IsHidden = strings.HasPrefix(item.Name, ".")
-		item.User = uname
-		item.Root = path
-		item.Group = gname
-		item.Size = file.Size()
-		item.Permissions = file.Mode()
-		item.IsDir = file.IsDir()
-		item.DateModified = stat.Mtim.Sec
-		item.Extension = strings.ReplaceAll(filepath.Ext(path+file.Name()), ".", "")
-		item.IsExecutable = file.Mode()&0111 == 0111 && !file.IsDir()
 
-		if file.Mode()&os.ModeSymlink != 0 {
-			item.IsLink = true
-			lnk, _ := os.Readlink(path + file.Name())
-			item.Link = lnk
-			lpath := path
-			if strings.HasPrefix(lnk, "/") || strings.HasPrefix(lnk, "..") {
-				lpath = ""
-			}
-			linkinfo, _ := os.Lstat(lpath + lnk)
-			item.IsDir = linkinfo.IsDir()
-			ss := strings.Split(lnk, "/")
-			item.LinkName = ss[len(ss)-1]
-			item.LinkExtension = strings.ReplaceAll(filepath.Ext(lpath+item.LinkName), ".", "")
-			item.IsHidden = strings.HasPrefix(item.LinkName, ".")
+		if !*all && strings.HasPrefix(file.Name(), ".") {
+			continue
 		}
-
-		items = append(items, item)
-
+		item := getItem(file, path)
+		if item.IsDir && cl <= maxLevel {
+			item.Children = traverse(item.Root+item.Name, all, maxLevel, &cl)
+		}
+		items = append(items, *item)
 	}
-	return items, nil
+
+	return &items
+}
+
+func getItem(file fs.FileInfo, path string) *Item {
+	item := Item{}
+	stat := file.Sys().(*syscall.Stat_t)
+	uname, gname := getUserGroupNames(stat)
+	item.Name = file.Name()
+	item.IsHidden = strings.HasPrefix(item.Name, ".")
+	item.User = uname
+	item.Root = path
+	item.Group = gname
+	item.Size = file.Size()
+	item.Permissions = file.Mode()
+	item.IsDir = file.IsDir()
+	item.Children = &[]Item{}
+	item.DateModified = stat.Mtim.Sec
+	item.Extension = strings.ReplaceAll(filepath.Ext(path+file.Name()), ".", "")
+	item.IsExecutable = file.Mode()&0111 == 0111 && !file.IsDir()
+
+	if file.Mode()&os.ModeSymlink != 0 {
+		item.IsLink = true
+		lnk, _ := os.Readlink(path + file.Name())
+		item.Link = lnk
+		lpath := path
+		if strings.HasPrefix(lnk, "/") || strings.HasPrefix(lnk, "..") {
+			lpath = ""
+		}
+		linkinfo, _ := os.Lstat(lpath + lnk)
+		item.IsDir = linkinfo.IsDir()
+		ss := strings.Split(lnk, "/")
+		item.LinkName = ss[len(ss)-1]
+		item.LinkExtension = strings.ReplaceAll(filepath.Ext(lpath+item.LinkName), ".", "")
+		item.IsHidden = strings.HasPrefix(item.LinkName, ".")
+	}
+
+	return &item
 }
 
 func getUserGroupNames(stat *syscall.Stat_t) (uname string, gname string) {
@@ -176,5 +197,6 @@ func getUserGroupNames(stat *syscall.Stat_t) (uname string, gname string) {
 	g := strconv.FormatUint(uint64(gid), 10)
 	usr, _ := user.LookupId(u)
 	group, _ := user.LookupGroupId(g)
+
 	return usr.Username, group.Name
 }

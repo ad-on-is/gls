@@ -3,12 +3,12 @@ package outputter
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/acarl005/textcol"
 	"github.com/ad-on-is/gls/fileinfos"
 	"github.com/ad-on-is/gls/settings"
 	"github.com/ad-on-is/gls/sorter"
+	"github.com/ad-on-is/gls/treeprint"
 	"github.com/juju/ansiterm/tabwriter"
 )
 
@@ -23,9 +23,6 @@ func Long(items *[]fileinfos.Item, config *settings.Config) {
 
 	fmt.Fprintln(w)
 	for _, item := range sorter.Sort(items, config) {
-		if !config.ShowAll && strings.HasPrefix(item.Name, ".") {
-			continue
-		}
 
 		out := ""
 
@@ -61,12 +58,31 @@ func Short(items *[]fileinfos.Item, config *settings.Config) {
 	theme := config.Themes[config.Theme]
 
 	for _, item := range sorter.Sort(items, config) {
-		if !config.ShowAll && strings.HasPrefix(item.Name, ".") {
-			continue
-		}
 		colStrings = append(colStrings, name(&item, &theme, false)+" "+git(&item, &theme))
 
 	}
 	textcol.PrintColumns(&colStrings, 2)
 	// w.Flush()
+}
+
+func Tree(items *[]fileinfos.Item, config *settings.Config) {
+
+	theme := config.Themes[config.Theme]
+	tree := treeprint.New(theme.Colors.Tree)
+
+	addTreeNodes(&tree, items, config, &theme)
+	fmt.Println(tree.String())
+	// w.Flush()
+}
+
+func addTreeNodes(tree *treeprint.Tree, items *[]fileinfos.Item, config *settings.Config, theme *settings.Theme) {
+	for _, item := range sorter.Sort(items, config) {
+
+		if len(*item.Children) > 0 {
+			n := (*tree).AddBranch(name(&item, theme, false))
+			addTreeNodes(&n, item.Children, config, theme)
+		} else {
+			(*tree).AddNode(name(&item, theme, false))
+		}
+	}
 }

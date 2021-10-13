@@ -17,6 +17,8 @@ var (
 	path      = kingpin.Arg("path", "The path or file to show").Default(".").String()
 	long      = kingpin.Flag("long", "Show long output").Short('l').Bool()
 	all       = kingpin.Flag("all", "Show hidden").Short('a').Bool()
+	tree      = kingpin.Flag("tree", "Show tree view").Short('t').Bool()
+	nest      = kingpin.Flag("nest", "Nest level for tree view").Short('n').Int()
 	group     = kingpin.Flag("group", "Show group next to user").Short('g').Bool()
 	git       = kingpin.Flag("git", "Show Git status").Short('G').Bool()
 	octal     = kingpin.Flag("octal", "Show octal permissions, ie 0755").Short('o').Bool()
@@ -36,7 +38,7 @@ func main() {
 
 	// test
 
-	items, err := fileinfos.GetItems(*path)
+	items, err := fileinfos.GetItems(*path, all, *nest)
 	if err != nil {
 		if config.DisplayInfos {
 			fmt.Println()
@@ -44,7 +46,7 @@ func main() {
 		}
 		os.Exit(0)
 	}
-	if len(items) == 0 {
+	if len(*items) == 0 {
 		if config.DisplayInfos {
 			fmt.Println()
 			fmt.Println(colorizer.Parse("  Folder is empty", config.Themes[config.Theme].Colors.Info))
@@ -53,13 +55,18 @@ func main() {
 	}
 
 	if config.ShowGit {
-		plugins.ApplyGitStatus(&items, path)
+		plugins.ApplyGitStatus(items, path)
+	}
+
+	if *tree {
+		outputter.Tree(items, &config)
+		os.Exit(0)
 	}
 
 	if *long {
-		outputter.Long(&items, &config)
+		outputter.Long(items, &config)
 		os.Exit(0)
 	}
-	outputter.Short(&items, &config)
+	outputter.Short(items, &config)
 
 }

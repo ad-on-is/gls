@@ -41,6 +41,7 @@ type Colors struct {
 	Symlink          SymlinkColors    `json:"symlink"`
 	Git              GitColors        `json:"git"`
 	Size             string           `json:"size"`
+	Tree             string           `json:"tree"`
 	Info             string           `json:"info"`
 	User             string           `json:"user"`
 	Group            string           `json:"group"`
@@ -123,6 +124,7 @@ func GetConfig() Config {
 				U: "green",
 			},
 			Size:            "white",
+			Tree:            "white",
 			Info:            "gray",
 			User:            "white",
 			Group:           "yellow",

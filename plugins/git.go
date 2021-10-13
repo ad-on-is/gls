@@ -9,14 +9,20 @@ import (
 )
 
 func ApplyGitStatus(items *[]fileinfos.Item, path *string) {
-	pathInfo, _ := os.Lstat(*path)
+	pathInfo, err := os.Lstat(*path)
+	if err != nil {
+		return
+	}
 	gitPath := *path
 	if !pathInfo.IsDir() {
 		ps := strings.Split(*path, "/")
 		gitPath = strings.Join(ps[:len(ps)-1], "/")
 	}
 	c := exec.Command("git", "-C", gitPath, "status", "--porcelain", "-u")
-	o, _ := c.Output()
+	o, err := c.Output()
+	if err != nil {
+		return
+	}
 	s := string(o)
 	statuses := strings.Split(s, "\n")
 	i := 0

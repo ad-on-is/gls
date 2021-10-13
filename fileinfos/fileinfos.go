@@ -132,13 +132,16 @@ func GetItems(path string, all *bool, maxLevel int) (*[]Item, error) {
 func traverse(path string, all *bool, maxLevel int, level *int) *[]Item {
 
 	cl := *level + 1
-
+	items := []Item{}
 	if !strings.HasSuffix(path, "/") {
 		path = path + "/"
 	}
-	files, _ := ioutil.ReadDir(path)
+	files, err := ioutil.ReadDir(path)
 
-	items := []Item{}
+	if err != nil {
+		return &items
+	}
+
 	for _, file := range files {
 
 		if !*all && strings.HasPrefix(file.Name(), ".") {
@@ -173,8 +176,13 @@ func getItem(file fs.FileInfo, path string) *Item {
 
 	if file.Mode()&os.ModeSymlink != 0 {
 		item.IsLink = true
-		lnk, _ := os.Readlink(path + file.Name())
-		item.Link = lnk
+		lnk, err := os.Readlink(path + file.Name())
+		if err == nil {
+			item.Link = lnk
+		} else {
+			item.Link = ""
+		}
+
 		lpath := path
 		if strings.HasPrefix(lnk, "/") || strings.HasPrefix(lnk, "..") {
 			lpath = ""

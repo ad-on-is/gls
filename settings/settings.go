@@ -82,14 +82,7 @@ type SymlinkColors struct {
 }
 
 func GetConfig() Config {
-	homedir, _ := os.UserHomeDir()
-	settingsFile := homedir + "/.config/gls.json"
-	jsonFile, _ := os.Open(settingsFile)
-	// if err != nil {
-	// 	createEmptySettings(settingsFile)
-	// }
 
-	jsonData, _ := ioutil.ReadAll(jsonFile)
 	theme := make(map[string]Theme)
 
 	theme["default"] = Theme{
@@ -148,8 +141,19 @@ func GetConfig() Config {
 		Themes:       theme,
 	}
 
-	// var ts Config
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return config
+	}
+	settingsFile := homedir + "/.config/gls.json"
+	jsonFile, err := os.Open(settingsFile)
+	if err != nil {
+		return config
+	}
 
-	json.Unmarshal(jsonData, &config)
+	jsonData, err := ioutil.ReadAll(jsonFile)
+	if err == nil {
+		json.Unmarshal(jsonData, &config)
+	}
 	return config
 }

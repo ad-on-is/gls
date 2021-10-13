@@ -1,0 +1,67 @@
+{
+  "theme": "nord",
+  "displayInfos": true,
+  "excludeDirs": [
+    "node_modules", ".git"
+  ],
+  "themes": {
+    "default": {
+      "dateFormat": "Mon 2006-01-02 15:04:05",
+      "folderSuffix": "",
+      "folderPrefix": "",
+      "exeSuffix": " ●",
+      "exePrefix": "",
+      "gitPrefix": {
+        "m": "●",
+        "d": "●",
+        "u": "●"
+      },
+      "specialColorizeLinks": true,
+      "dimSpecialColorizeLinks": true,
+      "specialColorizeDirs": false,
+      "specialColorizeFiles": false,
+      "specialColorizeDirIcons": true,
+      "specialColorizeFileIcons": true,
+      "colorizeGitIcon": true,
+      "colorizeGitName": false,
+      "colors": {
+        "info": "gray",
+        "octalPermissions": "gray",
+        "permissions": {
+          "none": "gray",
+          "prefix": "gray",
+          "r": "white",
+          "w": "gray",
+          "x": "red"
+        },
+        "git": {
+          "m": "yellow",
+          "d": "red",
+          "u": "green"
+        },
+        "symlink": {
+          "arrow": "gray",
+          "link": "gray"
+        },
+        "excluded": "gray",
+        "size": "gray",
+        "tree": "gray",
+        "user": "white",
+        "group": "white",
+        "date": "gray",
+        "dirName": "yellow",
+        "fileName": "white",
+        "dirIcon": "yellow",
+        "fileIcon": "white",
+        "dirLinkIcon": "white",
+        "dirLinkName": "white",
+        "hiddenDirIcon": "white",
+        "hiddenDirName": "white",
+        "hiddenFileIcon": "white",
+        "hiddenFileName": "white",
+        "exeIndicator": "red",
+        "folderIndicator": "white"
+      }
+    }
+  }
+}

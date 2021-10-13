@@ -25,10 +25,10 @@ func ApplyGitStatus(items *[]fileinfos.Item, path *string) {
 	}
 	s := string(o)
 	statuses := strings.Split(s, "\n")
-	traverse(items, &statuses)
+	traverse(items, &statuses, &gitPath)
 }
 
-func traverse(items *[]fileinfos.Item, statuses *[]string) {
+func traverse(items *[]fileinfos.Item, statuses *[]string, gitPath *string) {
 	if len(*items) == 0 {
 		return
 	}
@@ -39,20 +39,22 @@ func traverse(items *[]fileinfos.Item, statuses *[]string) {
 				continue
 			}
 			// needs some rework
-			s, f := parseStatus(&status)
-			if strings.Contains(f, clean(item.Name)) {
+			s, f := splitStatusAndFile(&status)
+			if strings.Contains(f, clean(item.Root+item.Name, gitPath)) {
 				(*items)[i].GitStatus = strings.ReplaceAll(s, "??", "U")
 			}
-			traverse((*items)[i].Children, statuses)
+			traverse((*items)[i].Children, statuses, gitPath)
 		}
 	}
 }
 
-func clean(s string) string {
-	return strings.ReplaceAll(s, "./", "")
+func clean(s string, gp *string) string {
+	so := strings.ReplaceAll(s, "./", "")
+	so = strings.ReplaceAll(so, *gp, "")
+	return so
 }
 
-func parseStatus(status *string) (string, string) {
+func splitStatusAndFile(status *string) (string, string) {
 	split := strings.Split(strings.TrimLeft(*status, " "), " ")
 	return split[0], split[1]
 }

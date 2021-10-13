@@ -195,8 +195,19 @@ func getUserGroupNames(stat *syscall.Stat_t) (uname string, gname string) {
 	gid := stat.Gid
 	u := strconv.FormatUint(uint64(uid), 10)
 	g := strconv.FormatUint(uint64(gid), 10)
-	usr, _ := user.LookupId(u)
-	group, _ := user.LookupGroupId(g)
 
-	return usr.Username, group.Name
+	uout := u
+	gout := g
+	usr, err := user.LookupId(u)
+	if err == nil {
+		uout = usr.Username
+	}
+
+	group, err := user.LookupGroupId(g)
+
+	if err == nil {
+		gout = group.Name
+	}
+
+	return uout, gout
 }

@@ -52,7 +52,10 @@ func traverse(items *[]fileinfos.Item, statuses *[]string, gitPath *string) {
 
 func clean(s string, gp *string) string {
 	so := strings.ReplaceAll(s, "./", "")
-	so = strings.ReplaceAll(so, *gp, "")
+	if *gp != "." {
+		so = strings.ReplaceAll(so, *gp, "")
+	}
+
 	return so
 }
 

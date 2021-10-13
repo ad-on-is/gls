@@ -18,7 +18,7 @@ var (
 	long      = kingpin.Flag("long", "Show long output").Short('l').Bool()
 	all       = kingpin.Flag("all", "Show hidden").Short('a').Bool()
 	tree      = kingpin.Flag("tree", "Show tree view").Short('t').Bool()
-	nest      = kingpin.Flag("nest", "Nest level for tree view").Short('n').Int()
+	nest      = kingpin.Flag("nest", "Nest level for tree view").Default("2").Short('n').Int()
 	group     = kingpin.Flag("group", "Show group next to user").Short('g').Bool()
 	git       = kingpin.Flag("git", "Show Git status").Short('G').Bool()
 	octal     = kingpin.Flag("octal", "Show octal permissions, ie 0755").Short('o').Bool()

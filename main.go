@@ -38,7 +38,7 @@ func main() {
 
 	// test
 
-	items, err := fileinfos.GetItems(*path, all, *nest)
+	items, err := fileinfos.GetItems(*path, all, &config.ExcludeDirs, *nest)
 	if err != nil {
 		if config.DisplayInfos {
 			fmt.Println()

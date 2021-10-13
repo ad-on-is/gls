@@ -33,7 +33,9 @@ func traverse(items *[]fileinfos.Item, statuses *[]string, gitPath *string) {
 		return
 	}
 	for i, item := range *items {
-
+		if item.Excluded {
+			continue
+		}
 		for _, status := range *statuses {
 			if status == "" {
 				continue

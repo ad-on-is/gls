@@ -103,7 +103,14 @@ func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string 
 		}
 
 	}
-	return icnOut + "  " + nameOut + linkOut
+
+	exclOut := ""
+
+	if item.Excluded {
+		exclOut = colorizer.Parse(" (excluded)", theme.Colors.Excluded)
+	}
+
+	return icnOut + "  " + nameOut + linkOut + exclOut
 
 }
 

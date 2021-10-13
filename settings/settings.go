@@ -10,6 +10,7 @@ type Config struct {
 	Themes       map[string]Theme `json:"themes"`
 	Theme        string           `json:"theme"`
 	DisplayInfos bool             `json:"displayInfos"`
+	ExcludeDirs  []string         `json:"excludeDirs"`
 	ShowAll      bool
 	ShowGroup    bool
 	ShowOctal    bool
@@ -40,6 +41,7 @@ type Colors struct {
 	Permissions      PermissionColors `json:"permissions"`
 	Symlink          SymlinkColors    `json:"symlink"`
 	Git              GitColors        `json:"git"`
+	Excluded         string           `json:"excluded"`
 	Size             string           `json:"size"`
 	Tree             string           `json:"tree"`
 	Info             string           `json:"info"`
@@ -117,6 +119,7 @@ func GetConfig() Config {
 				U: "green",
 			},
 			Size:            "white",
+			Excluded:        "white",
 			Tree:            "white",
 			Info:            "gray",
 			User:            "white",
@@ -139,6 +142,7 @@ func GetConfig() Config {
 		DirsFirst:    false,
 		Theme:        "default",
 		Themes:       theme,
+		ExcludeDirs:  []string{},
 	}
 
 	homedir, err := os.UserHomeDir()

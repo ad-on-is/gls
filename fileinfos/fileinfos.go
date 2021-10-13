@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"syscall"
@@ -35,6 +36,7 @@ type Item struct {
 	LinkExtension string
 	GitStatus     string
 	Children      *[]Item
+	Excluded      bool
 }
 
 func (i *Item) Icon() (string, *iconizer.Icon_Info) {
@@ -112,7 +114,7 @@ func (i *Item) HumanSize() string {
 		float64(i.Size)/float64(div), "KMGTPE"[exp])
 }
 
-func GetItems(path string, all *bool, maxLevel int) (*[]Item, error) {
+func GetItems(path string, all *bool, excludeDirs *[]string, maxLevel int) (*[]Item, error) {
 
 	rootInfo, err := os.Lstat(path)
 
@@ -126,10 +128,10 @@ func GetItems(path string, all *bool, maxLevel int) (*[]Item, error) {
 		return &items, nil
 	}
 	level := 1
-	return traverse(path, all, maxLevel, &level), nil
+	return traverse(path, all, excludeDirs, maxLevel, &level), nil
 }
 
-func traverse(path string, all *bool, maxLevel int, level *int) *[]Item {
+func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level *int) *[]Item {
 
 	cl := *level + 1
 	items := []Item{}
@@ -147,9 +149,20 @@ func traverse(path string, all *bool, maxLevel int, level *int) *[]Item {
 		if !*all && strings.HasPrefix(file.Name(), ".") {
 			continue
 		}
+
 		item := getItem(file, path)
-		if item.IsDir && cl <= maxLevel {
-			item.Children = traverse(item.Root+item.Name, all, maxLevel, &cl)
+		sort.Strings(*excludeDirs)
+		exclude := false
+		i := sort.SearchStrings(*excludeDirs, file.Name())
+		if i < len(*excludeDirs) && (*excludeDirs)[i] == file.Name() {
+			exclude = true
+		}
+		if !exclude {
+			if item.IsDir && cl <= maxLevel {
+				item.Children = traverse(item.Root+item.Name, all, excludeDirs, maxLevel, &cl)
+			}
+		} else {
+			item.Excluded = true
 		}
 		items = append(items, *item)
 	}

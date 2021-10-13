@@ -79,10 +79,10 @@ func addTreeNodes(tree *treeprint.Tree, items *[]fileinfos.Item, config *setting
 	for _, item := range sorter.Sort(items, config) {
 
 		if len(*item.Children) > 0 {
-			n := (*tree).AddBranch(name(&item, theme, false) + " " + git(&item, theme))
+			n := (*tree).AddBranch(name(&item, theme, true) + " " + git(&item, theme))
 			addTreeNodes(&n, item.Children, config, theme)
 		} else {
-			(*tree).AddNode(name(&item, theme, false) + " " + git(&item, theme))
+			(*tree).AddNode(name(&item, theme, true) + " " + git(&item, theme))
 		}
 	}
 }

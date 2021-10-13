@@ -2,6 +2,7 @@ package settings
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -88,6 +89,7 @@ func GetConfig() Config {
 	theme := make(map[string]Theme)
 
 	theme["default"] = Theme{
+		DateFormat:               "Mon 2006-01-02 15:04:05",
 		FolderSuffix:             "/",
 		FolderPrefix:             "",
 		ExeSuffix:                "*",
@@ -118,19 +120,19 @@ func GetConfig() Config {
 				D: "red",
 				U: "green",
 			},
-			Size:            "white",
-			Excluded:        "white",
-			Tree:            "white",
+			Size:            "gray",
+			Excluded:        "gray",
+			Tree:            "gray",
 			Info:            "gray",
-			User:            "white",
-			Group:           "yellow",
+			User:            "blue",
+			Group:           "magenta",
 			Date:            "gray",
-			DirName:         "white",
+			DirName:         "yellow",
+			DirIcon:         "yellow",
 			FileName:        "white",
-			DirIcon:         "white",
 			FileIcon:        "white",
-			DirLinkIcon:     "white",
-			DirLinkName:     "white",
+			DirLinkIcon:     "green",
+			DirLinkName:     "green",
 			ExeIndicator:    "red",
 			FolderIndicator: "white",
 		},
@@ -159,5 +161,6 @@ func GetConfig() Config {
 	if err == nil {
 		json.Unmarshal(jsonData, &config)
 	}
+	fmt.Println(config)
 	return config
 }

@@ -10,6 +10,9 @@ import (
 )
 
 func Parse(value string, col string, dim ...bool) string {
+	if col == "" {
+		return gchalk.White(value)
+	}
 	c := strings.Split(col, " ")
 	if len(dim) > 0 && dim[0] {
 		return gchalk.WithDim().StyleMust(c[:]...)(value)
@@ -25,18 +28,22 @@ func RGB(value string, col [3]uint8, dim ...bool) string {
 }
 
 func Permissions(value string, permissions settings.PermissionColors) string {
-	c := strings.Split(permissions.R, " ")
-	value = strings.ReplaceAll(value, "r", gchalk.StyleMust(c[:]...)("r"))
-	c = strings.Split(permissions.W, " ")
-	value = strings.ReplaceAll(value, "w", gchalk.StyleMust(c[:]...)("w"))
-	c = strings.Split(permissions.X, " ")
-	value = strings.ReplaceAll(value, "x", gchalk.StyleMust(c[:]...)("x"))
-	c = strings.Split(permissions.None, " ")
-	value = strings.ReplaceAll(value, "-", gchalk.StyleMust(c[:]...)("-"))
-	c = strings.Split(permissions.Prefix, " ")
-	value = strings.ReplaceAll(value, "d", gchalk.StyleMust(c[:]...)("d"))
-	value = strings.ReplaceAll(value, "L", gchalk.StyleMust(c[:]...)("L"))
+
+	r := Parse("r", permissions.R)
+	w := Parse("w", permissions.W)
+	x := Parse("x", permissions.X)
+	n := Parse("-", permissions.R)
+	d := Parse("d", permissions.R)
+	l := Parse("L", permissions.R)
+
+	value = strings.ReplaceAll(value, "r", r)
+	value = strings.ReplaceAll(value, "w", w)
+	value = strings.ReplaceAll(value, "x", x)
+	value = strings.ReplaceAll(value, "d", d)
+	value = strings.ReplaceAll(value, "-", n)
+	value = strings.ReplaceAll(value, "L", l)
 	return value
+
 }
 
 func Icon(icn *iconizer.Icon_Info) string {

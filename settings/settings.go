@@ -2,7 +2,6 @@ package settings
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -161,6 +160,5 @@ func GetConfig() Config {
 	if err == nil {
 		json.Unmarshal(jsonData, &config)
 	}
-	fmt.Println(config)
 	return config
 }

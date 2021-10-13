@@ -1,5 +1,5 @@
 {
-  "theme": "nord",
+  "theme": "default",
   "displayInfos": true,
   "excludeDirs": [
     "node_modules", ".git"

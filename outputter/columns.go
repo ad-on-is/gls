@@ -43,7 +43,7 @@ func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string 
 	linkOut := ""
 
 	if item.IsDir {
-		if theme.ColorizeGitIcon {
+		if theme.ColorizeGitIcon && item.GitStatus != "" {
 			icnOut = colorizer.Parse(icn.GetGlyph(), gitColor(item.GitStatus, theme))
 		} else {
 			if theme.SpecialColorizeDirIcons && special != "" {
@@ -53,7 +53,7 @@ func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string 
 			}
 		}
 
-		if theme.ColorizeGitName {
+		if theme.ColorizeGitName && item.GitStatus != "" {
 			nameOut = colorizer.Parse(item.Name, gitColor(item.GitStatus, theme))
 		} else {
 			if theme.SpecialColorizeDirs && special != "" {
@@ -68,7 +68,7 @@ func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string 
 
 	if !item.IsDir {
 
-		if theme.ColorizeGitIcon {
+		if theme.ColorizeGitIcon && item.GitStatus != "" {
 			icnOut = colorizer.Parse(icn.GetGlyph(), gitColor(item.GitStatus, theme))
 		} else {
 			if theme.SpecialColorizeFileIcons && special != "" {
@@ -78,7 +78,7 @@ func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string 
 			}
 		}
 
-		if theme.ColorizeGitName {
+		if theme.ColorizeGitName && item.GitStatus != "" {
 			nameOut = colorizer.Parse(item.Name, gitColor(item.GitStatus, theme))
 		} else {
 			if theme.SpecialColorizeFiles && special != "" {

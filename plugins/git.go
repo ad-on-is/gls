@@ -25,10 +25,16 @@ func ApplyGitStatus(items *[]fileinfos.Item, path *string) {
 	}
 	s := string(o)
 	statuses := strings.Split(s, "\n")
-	i := 0
-	for _, item := range *items {
+	traverse(items, &statuses)
+}
 
-		for _, status := range statuses {
+func traverse(items *[]fileinfos.Item, statuses *[]string) {
+	if len(*items) == 0 {
+		return
+	}
+	for i, item := range *items {
+
+		for _, status := range *statuses {
 			if status == "" {
 				continue
 			}
@@ -37,8 +43,8 @@ func ApplyGitStatus(items *[]fileinfos.Item, path *string) {
 			if strings.Contains(f, clean(item.Name)) {
 				(*items)[i].GitStatus = strings.ReplaceAll(s, "??", "U")
 			}
+			traverse((*items)[i].Children, statuses)
 		}
-		i++
 	}
 }
 

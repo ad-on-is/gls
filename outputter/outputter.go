@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/acarl005/textcol"
 	"github.com/ad-on-is/gls/fileinfos"
 	"github.com/ad-on-is/gls/settings"
 	"github.com/ad-on-is/gls/sorter"
+	"github.com/ad-on-is/gls/textcol"
 	"github.com/ad-on-is/gls/treeprint"
 	"github.com/juju/ansiterm/tabwriter"
 )

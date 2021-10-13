@@ -1,6 +1,6 @@
 // borrowed from: https://github.com/acarl005/textcol/blob/master/textcol.go
 
-package helpers
+package textcol
 
 import (
 	"fmt"

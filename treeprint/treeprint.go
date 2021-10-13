@@ -291,7 +291,7 @@ func New(color string) Tree {
 	EdgeTypeLink = EdgeType(colorizer.Parse("│", color, false))
 	EdgeTypeMid = EdgeType(colorizer.Parse("├──", color, false))
 	EdgeTypeEnd = EdgeType(colorizer.Parse("└──", color, false))
-	return &node{Value: "."}
+	return &node{Value: ""}
 }
 
 // NewWithRoot Generates new tree with the given root value

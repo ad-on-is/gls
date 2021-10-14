@@ -124,7 +124,7 @@ func GetItems(path string, all *bool, excludeDirs *[]string, maxLevel int) (*[]I
 
 	if !rootInfo.IsDir() {
 		items := []Item{}
-		items = append(items, *getItem(rootInfo, path))
+		items = append(items, *getItem(&rootInfo, path))
 		return &items, nil
 	}
 	level := 1
@@ -150,7 +150,7 @@ func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level
 			continue
 		}
 
-		item := getItem(file, path)
+		item := getItem(&file, path)
 		sort.Strings(*excludeDirs)
 		exclude := false
 		i := sort.SearchStrings(*excludeDirs, file.Name())
@@ -170,26 +170,26 @@ func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level
 	return &items
 }
 
-func getItem(file fs.FileInfo, path string) *Item {
+func getItem(file *fs.FileInfo, path string) *Item {
 	item := Item{}
-	stat := file.Sys().(*syscall.Stat_t)
+	stat := (*file).Sys().(*syscall.Stat_t)
 	uname, gname := getUserGroupNames(stat)
-	item.Name = file.Name()
+	item.Name = (*file).Name()
 	item.IsHidden = strings.HasPrefix(item.Name, ".")
 	item.User = uname
 	item.Root = path
 	item.Group = gname
-	item.Size = file.Size()
-	item.Permissions = file.Mode()
-	item.IsDir = file.IsDir()
+	item.Size = (*file).Size()
+	item.Permissions = (*file).Mode()
+	item.IsDir = (*file).IsDir()
 	item.Children = &[]Item{}
 	item.DateModified = stat.Mtim.Sec
-	item.Extension = strings.ReplaceAll(filepath.Ext(path+file.Name()), ".", "")
-	item.IsExecutable = file.Mode()&0111 == 0111 && !file.IsDir()
+	item.Extension = strings.ReplaceAll(filepath.Ext(path+(*file).Name()), ".", "")
+	item.IsExecutable = (*file).Mode()&0111 == 0111 && !(*file).IsDir()
 
-	if file.Mode()&os.ModeSymlink != 0 {
+	if (*file).Mode()&os.ModeSymlink != 0 {
 		item.IsLink = true
-		lnk, err := os.Readlink(path + file.Name())
+		lnk, err := os.Readlink(path + (*file).Name())
 		if err == nil {
 			item.Link = lnk
 		} else {

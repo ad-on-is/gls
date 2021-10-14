@@ -98,6 +98,8 @@ func (i *Item) OctalPermissions() string {
 }
 
 func (i *Item) HumanSize() string {
+
+	return "asdfaf"
 	const unit = 1000
 	if i.Size == 0 {
 		return "  -  "

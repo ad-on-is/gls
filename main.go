@@ -38,7 +38,13 @@ func main() {
 
 	// test
 
-	items, err := fileinfos.GetItems(*path, all, &config.ExcludeDirs, *nest)
+	level := 1
+
+	if *tree {
+		level = *nest
+	}
+
+	items, err := fileinfos.GetItems(*path, all, &config.ExcludeDirs, level)
 	if err != nil {
 		if config.DisplayInfos {
 			fmt.Println()

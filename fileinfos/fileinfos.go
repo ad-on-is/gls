@@ -200,12 +200,16 @@ func getItem(file fs.FileInfo, path string) *Item {
 		if strings.HasPrefix(lnk, "/") || strings.HasPrefix(lnk, "..") {
 			lpath = ""
 		}
-		linkinfo, _ := os.Lstat(lpath + lnk)
-		item.IsDir = linkinfo.IsDir()
-		ss := strings.Split(lnk, "/")
-		item.LinkName = ss[len(ss)-1]
-		item.LinkExtension = strings.ReplaceAll(filepath.Ext(lpath+item.LinkName), ".", "")
-		item.IsHidden = strings.HasPrefix(item.LinkName, ".")
+
+		linkinfo, err := os.Lstat(lpath + lnk)
+		if err == nil {
+			item.IsDir = linkinfo.IsDir()
+			ss := strings.Split(lnk, "/")
+			item.LinkName = ss[len(ss)-1]
+			item.LinkExtension = strings.ReplaceAll(filepath.Ext(lpath+item.LinkName), ".", "")
+			item.IsHidden = strings.HasPrefix(item.LinkName, ".")
+		}
+
 	}
 
 	return &item

@@ -31,6 +31,7 @@ type Item struct {
 	IsHidden      bool
 	IsExecutable  bool
 	Link          string
+	LinkRoot      string
 	LinkName      string
 	Extension     string
 	LinkExtension string
@@ -99,7 +100,6 @@ func (i *Item) OctalPermissions() string {
 
 func (i *Item) HumanSize() string {
 
-	return "asdfaf"
 	const unit = 1000
 	if i.Size == 0 {
 		return "  -  "
@@ -118,18 +118,30 @@ func (i *Item) HumanSize() string {
 
 func GetItems(path string, all *bool, excludeDirs *[]string, maxLevel int) (*[]Item, error) {
 
-	rootInfo, err := os.Lstat(path)
+	rootFile, err := os.Lstat(path)
+	level := 1
 
 	if err != nil {
 		return nil, errors.New("path not found")
 	}
 
-	if !rootInfo.IsDir() {
+	if !rootFile.IsDir() {
 		items := []Item{}
-		items = append(items, *getItem(&rootInfo, path))
+		item := getItem(&rootFile, path)
+
+		if (rootFile).Mode()&os.ModeSymlink != 0 {
+			ss := strings.Split(path, "/")
+			item.Root = strings.Join(ss[:len(ss)-1], "/") + "/"
+			getLinkItem(item)
+			return traverse(item.Root+item.Link, all, excludeDirs, maxLevel, &level), nil
+			// }
+		} else {
+
+			items = append(items, *item)
+		}
 		return &items, nil
 	}
-	level := 1
+
 	return traverse(path, all, excludeDirs, maxLevel, &level), nil
 }
 
@@ -153,6 +165,9 @@ func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level
 		}
 
 		item := getItem(&file, path)
+		if (file).Mode()&os.ModeSymlink != 0 {
+			getLinkItem(item)
+		}
 		sort.Strings(*excludeDirs)
 		exclude := false
 		i := sort.SearchStrings(*excludeDirs, file.Name())
@@ -161,7 +176,11 @@ func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level
 		}
 		if !exclude {
 			if item.IsDir && cl <= maxLevel {
-				item.Children = traverse(item.Root+item.Name, all, excludeDirs, maxLevel, &cl)
+				tPath := item.Root + item.Name
+				if item.IsLink {
+					tPath = item.Root + item.Link
+				}
+				item.Children = traverse(tPath, all, excludeDirs, maxLevel, &cl)
 			}
 		} else {
 			item.Excluded = true
@@ -174,12 +193,12 @@ func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level
 
 func getItem(file *fs.FileInfo, path string) *Item {
 	item := Item{}
+	item.Root = path
 	stat := (*file).Sys().(*syscall.Stat_t)
 	uname, gname := getUserGroupNames(stat)
 	item.Name = (*file).Name()
-	item.IsHidden = strings.HasPrefix(item.Name, ".")
+	item.IsHidden = isHidden(item.Name)
 	item.User = uname
-	item.Root = path
 	item.Group = gname
 	item.Size = (*file).Size()
 	item.Permissions = (*file).Mode()
@@ -189,32 +208,38 @@ func getItem(file *fs.FileInfo, path string) *Item {
 	item.Extension = strings.ReplaceAll(filepath.Ext(path+(*file).Name()), ".", "")
 	item.IsExecutable = (*file).Mode()&0111 == 0111 && !(*file).IsDir()
 
-	if (*file).Mode()&os.ModeSymlink != 0 {
-		item.IsLink = true
-		lnk, err := os.Readlink(path + (*file).Name())
-		if err == nil {
-			item.Link = lnk
-		} else {
-			item.Link = ""
-		}
+	return &item
+}
 
-		lpath := path
-		if strings.HasPrefix(lnk, "/") || strings.HasPrefix(lnk, "..") {
-			lpath = ""
-		}
+func getLinkItem(item *Item) {
 
-		linkinfo, err := os.Lstat(lpath + lnk)
-		if err == nil {
-			item.IsDir = linkinfo.IsDir()
-			ss := strings.Split(lnk, "/")
-			item.LinkName = ss[len(ss)-1]
-			item.LinkExtension = strings.ReplaceAll(filepath.Ext(lpath+item.LinkName), ".", "")
-			item.IsHidden = strings.HasPrefix(item.LinkName, ".")
-		}
-
+	item.IsLink = true
+	lnk, err := os.Readlink(item.Root + item.Name)
+	if err == nil {
+		item.Link = lnk
+	} else {
+		item.Link = ""
 	}
 
-	return &item
+	// points somewhere else
+	if strings.HasPrefix(item.Link, "/") || strings.HasPrefix(item.Link, "..") {
+		ss := strings.Split(item.Link, "/")
+		item.Root = strings.Join(ss[:len(ss)-1], "/")
+	}
+
+	linkinfo, err := os.Lstat(item.Root + item.Link)
+	if err == nil {
+		item.IsDir = linkinfo.IsDir()
+		ss := strings.Split(item.Link, "/")
+		item.LinkName = ss[len(ss)-1]
+		item.LinkExtension = strings.ReplaceAll(filepath.Ext(item.Root+item.LinkName), ".", "")
+		item.IsHidden = isHidden(item.LinkName)
+	}
+
+}
+
+func isHidden(s string) bool {
+	return strings.HasPrefix(s, ".") && !strings.HasPrefix(s, "..") && !strings.HasPrefix(s, "./")
 }
 
 func getUserGroupNames(stat *syscall.Stat_t) (uname string, gname string) {

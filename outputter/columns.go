@@ -89,6 +89,12 @@ func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string 
 		}
 
 		if item.IsExecutable {
+			if theme.Colors.Exe.Icon != "" {
+				icnOut = colorizer.Parse(icn.GetGlyph(), theme.Colors.Exe.Icon)
+			}
+			if theme.Colors.Exe.Name != "" {
+				nameOut = colorizer.Parse(item.Name, theme.Colors.Exe.Icon)
+			}
 			nameOut = colorizer.Parse(theme.ExePrefix, theme.Colors.ExeIndicator) + nameOut + colorizer.Parse(theme.ExeSuffix, theme.Colors.ExeIndicator)
 		}
 

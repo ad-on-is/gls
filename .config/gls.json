@@ -39,6 +39,11 @@
           "d": "red",
           "u": "green"
         },
+        "exe": {
+          "icon": "red",
+          "name": "red",
+          "indicator": "red"
+        },
         "symlink": {
           "arrow": "gray",
           "link": "gray"

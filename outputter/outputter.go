@@ -54,6 +54,8 @@ func Short(items *[]fileinfos.Item, config *settings.Config) {
 
 	textcol.Output = os.Stdout
 
+	fmt.Println()
+
 	colStrings := []string{}
 	theme := config.Themes[config.Theme]
 
@@ -62,7 +64,6 @@ func Short(items *[]fileinfos.Item, config *settings.Config) {
 
 	}
 	textcol.PrintColumns(&colStrings, 2)
-	// w.Flush()
 }
 
 func Tree(items *[]fileinfos.Item, config *settings.Config) {

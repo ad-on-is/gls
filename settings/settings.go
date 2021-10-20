@@ -41,6 +41,7 @@ type Colors struct {
 	Permissions      PermissionColors `json:"permissions"`
 	Symlink          SymlinkColors    `json:"symlink"`
 	Git              GitColors        `json:"git"`
+	Exe              ExeColors        `json:"exe"`
 	Excluded         string           `json:"excluded"`
 	Size             string           `json:"size"`
 	Tree             string           `json:"tree"`
@@ -83,6 +84,12 @@ type SymlinkColors struct {
 	Link  string `json:"link"`
 }
 
+type ExeColors struct {
+	Icon      string `json:"icon"`
+	Name      string `json:"name"`
+	Indicator string `json:"indicator"`
+}
+
 func GetConfig() Config {
 
 	theme := make(map[string]Theme)
@@ -118,6 +125,11 @@ func GetConfig() Config {
 				M: "yellow",
 				D: "red",
 				U: "green",
+			},
+			Exe: ExeColors{
+				Icon:      "red",
+				Name:      "red",
+				Indicator: "red",
 			},
 			Size:            "gray",
 			Excluded:        "gray",

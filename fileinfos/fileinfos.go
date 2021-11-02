@@ -130,15 +130,22 @@ func GetItems(path string, all *bool, excludeDirs *[]string, maxLevel int) (*[]I
 		item := getItem(&rootFile, path)
 
 		if (rootFile).Mode()&os.ModeSymlink != 0 {
-			ss := strings.Split(path, "/")
-			item.Root = strings.Join(ss[:len(ss)-1], "/") + "/"
-			getLinkItem(item)
-			return traverse(item.Root+item.Link, all, excludeDirs, maxLevel, &level), nil
-			// }
-		} else {
+			if strings.Contains(path, "/") {
+				ss := strings.Split(path, "/")
+				item.Root = strings.Join(ss[:len(ss)-1], "/") + "/"
+			} else {
+				wd, _ := os.Getwd()
+				item.Root = wd + "/"
+			}
 
-			items = append(items, *item)
+			getLinkItem(item)
+			if !item.IsDir {
+				items = append(items, *item)
+				return &items, nil
+			}
+			return traverse(item.Root+item.Link, all, excludeDirs, maxLevel, &level), nil
 		}
+		items = append(items, *item)
 		return &items, nil
 	}
 
@@ -212,9 +219,10 @@ func getItem(file *fs.FileInfo, path string) *Item {
 }
 
 func getLinkItem(item *Item) {
-
+	itemPath := item.Root + "/" + item.Name
+	itemPath = strings.ReplaceAll(itemPath, "//", "/")
 	item.IsLink = true
-	lnk, err := os.Readlink(item.Root + item.Name)
+	lnk, err := os.Readlink(itemPath)
 	if err == nil {
 		item.Link = lnk
 	} else {
@@ -224,10 +232,13 @@ func getLinkItem(item *Item) {
 	// points somewhere else
 	if strings.HasPrefix(item.Link, "/") || strings.HasPrefix(item.Link, "..") {
 		ss := strings.Split(item.Link, "/")
-		item.Root = strings.Join(ss[:len(ss)-1], "/")
+		item.Root = strings.Join(ss[:len(ss)-1], "/") + "/"
 	}
 
-	linkinfo, err := os.Lstat(item.Root + item.Link)
+	linkPath := item.Root + "/" + item.Link
+	linkPath = strings.ReplaceAll(linkPath, "//", "/")
+
+	linkinfo, err := os.Lstat(linkPath)
 	if err == nil {
 		item.IsDir = linkinfo.IsDir()
 		ss := strings.Split(item.Link, "/")

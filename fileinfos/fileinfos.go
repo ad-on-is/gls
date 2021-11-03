@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -159,14 +158,21 @@ func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level
 	if !strings.HasSuffix(path, "/") {
 		path = path + "/"
 	}
-	files, err := ioutil.ReadDir(path)
+	f, err := os.Open(path)
 
 	if err != nil {
 		return &items
 	}
 
-	for _, file := range files {
+	files, _ := f.Readdirnames(-1)
 
+	for _, dn := range files {
+
+		file, err := os.Lstat(path + "/" + dn)
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
 		if !*all && strings.HasPrefix(file.Name(), ".") {
 			continue
 		}

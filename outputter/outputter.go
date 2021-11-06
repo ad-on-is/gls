@@ -22,7 +22,7 @@ func Long(items *[]fileinfos.Item, config *settings.Config) {
 	theme := config.Themes[config.Theme]
 
 	fmt.Fprintln(w)
-	for _, item := range sorter.Sort(items, config) {
+	for _, item := range *sorter.Sort(items, config) {
 
 		out := ""
 
@@ -59,7 +59,7 @@ func Short(items *[]fileinfos.Item, config *settings.Config) {
 	colStrings := []string{}
 	theme := config.Themes[config.Theme]
 
-	for _, item := range sorter.Sort(items, config) {
+	for _, item := range *sorter.Sort(items, config) {
 		colStrings = append(colStrings, name(&item, &theme, false)+" "+git(&item, &theme))
 
 	}
@@ -77,7 +77,7 @@ func Tree(items *[]fileinfos.Item, config *settings.Config) {
 }
 
 func addTreeNodes(tree *treeprint.Tree, items *[]fileinfos.Item, config *settings.Config, theme *settings.Theme) {
-	for _, item := range sorter.Sort(items, config) {
+	for _, item := range *sorter.Sort(items, config) {
 
 		if len(*item.Children) > 0 {
 			n := (*tree).AddBranch(name(&item, theme, true) + " " + git(&item, theme))

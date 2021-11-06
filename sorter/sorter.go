@@ -5,17 +5,17 @@ import (
 	"github.com/ad-on-is/gls/settings"
 )
 
-func Sort(items *[]fileinfos.Item, config *settings.Config) []fileinfos.Item {
+func Sort(items *[]fileinfos.Item, config *settings.Config) *[]fileinfos.Item {
 
 	if config.DirsFirst {
 		return dirsFirst(items)
 	}
 
-	return *items
+	return items
 
 }
 
-func dirsFirst(items *[]fileinfos.Item) []fileinfos.Item {
+func dirsFirst(items *[]fileinfos.Item) *[]fileinfos.Item {
 	sorted := []fileinfos.Item{}
 	for _, item := range *items {
 		if item.IsDir {
@@ -29,5 +29,5 @@ func dirsFirst(items *[]fileinfos.Item) []fileinfos.Item {
 		}
 
 	}
-	return sorted
+	return &sorted
 }

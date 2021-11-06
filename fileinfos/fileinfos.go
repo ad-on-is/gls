@@ -166,6 +166,8 @@ func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level
 
 	files, _ := f.Readdirnames(-1)
 
+	sort.Slice(files, func(i, j int) bool { return strings.ToLower(files[i]) < strings.ToLower(files[j]) })
+
 	for _, dn := range files {
 
 		file, err := os.Lstat(path + "/" + dn)

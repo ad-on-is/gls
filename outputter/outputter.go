@@ -56,8 +56,8 @@ func Long(items *[]fileinfos.Item, config *settings.Config, buf *bytes.Buffer) {
 		// out += name(&item, &theme, true)
 
 		// fmt.Fprintln(w, out)
-		icon, name, link, excl := name(&item, &theme, true)
-		t.AppendRow(table.Row{octal(&item, &theme), permissions(&item, &theme), size(&item, &theme), user(&item, &theme), group(&item, &theme), date(&item, &theme), icon + " " + name + excl + link})
+		icon, name, link, _ := name(&item, &theme, true)
+		t.AppendRow(table.Row{octal(&item, &theme), permissions(&item, &theme), size(&item, &theme), user(&item, &theme), group(&item, &theme), date(&item, &theme), icon + " " + name + link})
 	}
 	t.Render()
 	// w.Flush()
@@ -92,13 +92,13 @@ func Tree(items *[]fileinfos.Item, config *settings.Config) {
 
 func addTreeNodes(tree *treeprint.Tree, items *[]fileinfos.Item, config *settings.Config, theme *settings.Theme) {
 	for _, item := range *sorter.Sort(items, config) {
-		icon, name, _, _ := name(&item, theme, false)
+		icon, name, _, excl := name(&item, theme, false)
 
 		if len(*item.Children) > 0 {
-			n := (*tree).AddBranch(icon + name + " " + git(&item, theme))
+			n := (*tree).AddBranch(icon + name + " " + git(&item, theme) + excl)
 			addTreeNodes(&n, item.Children, config, theme)
 		} else {
-			(*tree).AddNode(icon + " " + name + " " + git(&item, theme))
+			(*tree).AddNode(icon + " " + name + " " + git(&item, theme) + excl)
 		}
 	}
 }

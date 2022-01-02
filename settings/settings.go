@@ -34,6 +34,7 @@ type Theme struct {
 	ColorizeGitName          bool      `json:"colorizeGitName"`
 	Colors                   Colors    `json:"colors"`
 	GitPrefix                GitPrefix `json:"gitPrefix"`
+	Perms                    Perms     `json:"perms"`
 }
 
 type Colors struct {
@@ -77,6 +78,15 @@ type GitPrefix struct {
 	M string `json:"m"`
 	D string `json:"d"`
 	U string `json:"u"`
+}
+
+type Perms struct {
+	R    string `json:"r"`
+	W    string `json:"w"`
+	X    string `json:"x"`
+	L    string `json:"l"`
+	D    string `json:"d"`
+	Dash string `json:"dash"`
 }
 
 type SymlinkColors struct {

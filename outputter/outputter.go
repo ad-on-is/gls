@@ -1,6 +1,7 @@
 package outputter
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 
@@ -9,45 +10,57 @@ import (
 	"github.com/ad-on-is/gls/sorter"
 	"github.com/ad-on-is/gls/textcol"
 	"github.com/ad-on-is/gls/treeprint"
-	"github.com/juju/ansiterm/tabwriter"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 // test
 
-func Long(items *[]fileinfos.Item, config *settings.Config) {
+func Long(items *[]fileinfos.Item, config *settings.Config, buf *bytes.Buffer) {
+	t := table.NewWriter()
+	t.SetStyle(table.Style{Options: table.Options{DrawBorder: false, SeparateColumns: true}, Box: table.BoxStyle{PaddingLeft: " ",
+		PaddingRight: " "}})
+	t.SetOutputMirror(os.Stdout)
+	width, _, _ := terminal.GetSize(0)
+	t.SetAllowedRowLength(width)
 
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 0, 0, 2, ' ', 0)
+	// w := new(tabwriter.Writer)
+	// w.Init(os.Stdout, 0, 0, 2, ' ', 0)
 
 	theme := config.Themes[config.Theme]
 
-	fmt.Fprintln(w)
+	// fmt.Fprintln(w)
 	for _, item := range *sorter.Sort(items, config) {
-
-		out := ""
+		//
+		// out := ""
 
 		if config.ShowOctal {
-			out += octal(&item, &theme) + "\t"
+			// rows = append(rows, octal(&item, &theme))
+			// out += octal(&item, &theme) + "\t"
 		}
-		out += permissions(&item, &theme) + "\t"
-		out += size(&item, &theme) + "\t"
-		out += user(&item, &theme) + "\t"
+		// rows = append(rows, permissions(&item, &theme))
+		// out += permissions(&item, &theme) + "\t"
+		// out += size(&item, &theme) + "\t"
+		// out += user(&item, &theme) + "\t"
 
 		if config.ShowGroup {
-			out += group(&item, &theme) + "\t"
+			// out += group(&item, &theme) + "\t"
 		}
 
-		out += date(&item, &theme) + "\t"
+		// out += date(&item, &theme) + "\t"
 
 		if config.ShowGit {
-			out += git(&item, &theme) + "\t"
+			// out += git(&item, &theme) + "\t"
 		}
 
-		out += name(&item, &theme, true)
+		// out += name(&item, &theme, true)
 
-		fmt.Fprintln(w, out)
+		// fmt.Fprintln(w, out)
+		icon, name, link, excl := name(&item, &theme, true)
+		t.AppendRow(table.Row{octal(&item, &theme), permissions(&item, &theme), size(&item, &theme), user(&item, &theme), group(&item, &theme), date(&item, &theme), icon + " " + name + excl + link})
 	}
-	w.Flush()
+	t.Render()
+	// w.Flush()
 }
 
 func Short(items *[]fileinfos.Item, config *settings.Config) {
@@ -60,7 +73,8 @@ func Short(items *[]fileinfos.Item, config *settings.Config) {
 	theme := config.Themes[config.Theme]
 
 	for _, item := range *sorter.Sort(items, config) {
-		colStrings = append(colStrings, name(&item, &theme, false)+" "+git(&item, &theme))
+		icon, name, _, _ := name(&item, &theme, false)
+		colStrings = append(colStrings, icon+" "+name+" "+git(&item, &theme))
 
 	}
 	textcol.PrintColumns(&colStrings, 2)
@@ -78,12 +92,13 @@ func Tree(items *[]fileinfos.Item, config *settings.Config) {
 
 func addTreeNodes(tree *treeprint.Tree, items *[]fileinfos.Item, config *settings.Config, theme *settings.Theme) {
 	for _, item := range *sorter.Sort(items, config) {
+		icon, name, _, _ := name(&item, theme, false)
 
 		if len(*item.Children) > 0 {
-			n := (*tree).AddBranch(name(&item, theme, true) + " " + git(&item, theme))
+			n := (*tree).AddBranch(icon + name + " " + git(&item, theme))
 			addTreeNodes(&n, item.Children, config, theme)
 		} else {
-			(*tree).AddNode(name(&item, theme, true) + " " + git(&item, theme))
+			(*tree).AddNode(icon + " " + name + " " + git(&item, theme))
 		}
 	}
 }

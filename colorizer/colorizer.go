@@ -28,13 +28,12 @@ func RGB(value string, col [3]uint8, dim ...bool) string {
 }
 
 func Permissions(value string, permissions settings.PermissionColors) string {
-
 	r := Parse("r", permissions.R)
 	w := Parse("w", permissions.W)
 	x := Parse("x", permissions.X)
-	n := Parse("-", permissions.R)
-	d := Parse("d", permissions.R)
-	l := Parse("L", permissions.R)
+	n := Parse("-", permissions.None)
+	d := Parse("d", permissions.Prefix)
+	l := Parse("L", permissions.Prefix)
 
 	value = strings.ReplaceAll(value, "r", r)
 	value = strings.ReplaceAll(value, "w", w)

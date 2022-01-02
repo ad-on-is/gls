@@ -1,6 +1,8 @@
 package outputter
 
 import (
+	"strings"
+
 	"github.com/ad-on-is/gls/colorizer"
 	"github.com/ad-on-is/gls/fileinfos"
 	"github.com/ad-on-is/gls/settings"
@@ -11,7 +13,14 @@ func octal(item *fileinfos.Item, theme *settings.Theme) string {
 }
 
 func permissions(item *fileinfos.Item, theme *settings.Theme) string {
-	return colorizer.Permissions(item.HumanPermissions(), theme.Colors.Permissions)
+	perms := colorizer.Permissions(item.HumanPermissions(), theme.Colors.Permissions)
+	perms = strings.ReplaceAll(perms, "r", theme.Perms.R)
+	perms = strings.ReplaceAll(perms, "w", theme.Perms.W)
+	perms = strings.ReplaceAll(perms, "x", theme.Perms.X)
+	perms = strings.ReplaceAll(perms, "l", theme.Perms.L)
+	perms = strings.ReplaceAll(perms, "d", theme.Perms.D)
+	perms = strings.ReplaceAll(perms, "-", theme.Perms.Dash)
+	return perms
 }
 
 func size(item *fileinfos.Item, theme *settings.Theme) string {
@@ -34,16 +43,17 @@ func git(item *fileinfos.Item, theme *settings.Theme) string {
 	return colorizer.Parse(gitPrefix(item.GitStatus, theme), gitColor(item.GitStatus, theme))
 }
 
-func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string {
+func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) (string, string, string, string) {
 	special, icn := item.Icon()
 	specialColor := colorizer.GetIconColor(*icn)
 
-	icnOut := ""
-	nameOut := ""
-	linkOut := ""
+	icnOut := icn.GetGlyph()
+	nameOut := item.Name
+	linkOut := item.Link
 
 	if item.IsDir {
 		if theme.ColorizeGitIcon && item.GitStatus != "" {
+
 			icnOut = colorizer.Parse(icn.GetGlyph(), gitColor(item.GitStatus, theme))
 		} else {
 			if theme.SpecialColorizeDirIcons && special != "" {
@@ -116,7 +126,7 @@ func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) string 
 		exclOut = colorizer.Parse(" (excluded)", theme.Colors.Excluded)
 	}
 
-	return icnOut + "\u00a0" + " " + nameOut + linkOut + exclOut
+	return icnOut + "\u2800", nameOut, linkOut, exclOut
 
 }
 

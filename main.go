@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 
@@ -70,7 +71,8 @@ func main() {
 	}
 
 	if *long {
-		outputter.Long(items, &config)
+		buf := bytes.NewBuffer([]byte(""))
+		outputter.Long(items, &config, buf)
 		os.Exit(0)
 	}
 	outputter.Short(items, &config)

@@ -1,22 +1,8 @@
 # 🚦 GLS
 
-## A colorful and higly customizable `ls` written in Go
+## A colorful and higly customizable `ls` written in Go.
 
 ![Long](https://i.imgur.com/4dmiO3l.png)
-
----
-
-## ✔️ Fast
-
-### Provides fast output within just ms
-
-## ✔️ Customizable
-
-### Checks nearly every box, when it comes to customization via `json`
-
-## ✔️ Git status
-
-### Shows the status of untracked/modified/deleted files in Git
 
 ---
 

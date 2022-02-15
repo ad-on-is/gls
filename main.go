@@ -48,14 +48,12 @@ func main() {
 	items, err := fileinfos.GetItems(*path, all, &config.ExcludeDirs, level)
 	if err != nil {
 		if config.DisplayInfos {
-			fmt.Println()
 			fmt.Println(colorizer.Parse("  "+*path+" not found", config.Themes[config.Theme].Colors.Info))
 		}
 		os.Exit(0)
 	}
 	if len(*items) == 0 {
 		if config.DisplayInfos {
-			fmt.Println()
 			fmt.Println(colorizer.Parse("  Folder is empty", config.Themes[config.Theme].Colors.Info))
 		}
 		os.Exit(0)

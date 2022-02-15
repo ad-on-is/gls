@@ -121,7 +121,7 @@ func GetItems(path string, all *bool, excludeDirs *[]string, maxLevel int) (*[]I
 	level := 1
 
 	if err != nil {
-		return nil, errors.New("path not found")
+		return nil, errors.New("NOT_FOUND")
 	}
 
 	if !rootFile.IsDir() {

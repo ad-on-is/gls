@@ -1,9 +1,7 @@
 {
-  "theme": "default",
-  "displayInfos": true,
-  "excludeDirs": [
-    "node_modules", ".git"
-  ],
+  "theme": "tokyionights",
+  "displayInfos": false,
+  "excludeDirs": ["node_modules", ".git"],
   "themes": {
     "default": {
       "dateFormat": "Mon 2006-01-02 15:04:05",
@@ -15,6 +13,14 @@
         "m": "●",
         "d": "●",
         "u": "●"
+      },
+      "perms": {
+        "r": "r",
+        "w": "w",
+        "x": "x",
+        "l": "l",
+        "d": "d",
+        "dash": "-"
       },
       "specialColorizeLinks": true,
       "dimSpecialColorizeLinks": true,
@@ -66,6 +72,149 @@
         "hiddenFileName": "white",
         "exeIndicator": "red",
         "folderIndicator": "white"
+      }
+    },
+    "nord": {
+      "dateFormat": "Mon 2006-01-02 15:04:05",
+      "folderSuffix": "",
+      "folderPrefix": "",
+      "exeSuffix": "",
+      "exePrefix": "",
+      "gitPrefix": {
+        "m": "",
+        "d": "",
+        "u": ""
+      },
+      "perms": {
+        "r": "r",
+        "w": "w",
+        "x": "x",
+        "l": "l",
+        "d": "d",
+        "dash": "-"
+      },
+      "specialColorizeLinks": true,
+      "dimSpecialColorizeLinks": true,
+      "specialColorizeDirs": false,
+      "specialColorizeFiles": false,
+      "specialColorizeDirIcons": true,
+      "specialColorizeFileIcons": true,
+      "colorizeGitIcon": true,
+      "colorizeGitName": true,
+      "colors": {
+        "info": "gray",
+        "octalPermissions": "#8FBCBB",
+        "permissions": {
+          "none": "#81A1C1",
+          "prefix": "#81A1C1",
+          "r": "#88C0D0",
+          "w": "#88C0D0",
+          "x": "#BF616A"
+        },
+        "symlink": {
+          "arrow": "#81A1C1",
+          "link": "#81A1C1"
+        },
+        "git": {
+          "m": "#EBCB8B",
+          "d": "#B48EAD",
+          "u": "#A3BE8C"
+        },
+        "exe": {
+          "icon": "#BF616A",
+          "name": "",
+          "indicator": "#BF616A"
+        },
+        "excluded": "#FFFFFF",
+        "size": "#565f89",
+        "tree": "#8FBCBB",
+        "user": "#88C0D0",
+        "group": "#88C0D0",
+        "date": "#8FBCBB",
+        "dirName": "#88C0D0",
+        "fileName": "#FFFFFF",
+        "dirIcon": "#88C0D0",
+        "fileIcon": "#FFFFFF",
+        "dirLinkIcon": "#FFFFFF",
+        "dirLinkName": "#FFFFFF",
+        "hiddenDirIcon": "#FFFFFF",
+        "hiddenDirName": "#FFFFFF",
+        "hiddenFileIcon": "#FFFFFF",
+        "hiddenFileName": "#FFFFFF",
+        "exeIndicator": "#FFFFFF",
+        "folderIndicator": "#FFFFFF"
+      }
+    },
+
+    "tokyionights": {
+      "dateFormat": "02.01.06 15:04",
+      "folderSuffix": "",
+      "folderPrefix": "",
+      "exeSuffix": "",
+      "exePrefix": "",
+      "gitPrefix": {
+        "m": "",
+        "d": "",
+        "u": ""
+      },
+      "perms": {
+        "r": "•",
+        "w": "•",
+        "x": "•",
+        "l": "•",
+        "d": "•",
+        "dash": "•"
+      },
+      "specialColorizeLinks": true,
+      "dimSpecialColorizeLinks": true,
+      "specialColorizeDirs": false,
+      "specialColorizeFiles": false,
+      "specialColorizeDirIcons": true,
+      "specialColorizeFileIcons": true,
+      "colorizeGitIcon": true,
+      "colorizeGitName": true,
+      "colors": {
+        "info": "gray",
+        "octalPermissions": "#414868",
+        "permissions": {
+          "none": "#000000",
+          "prefix": "#000000",
+          "r": "#9ece6a",
+          "w": "#c0caf5",
+          "x": "#f7768e"
+        },
+        "symlink": {
+          "arrow": "#81A1C1",
+          "link": "#81A1C1"
+        },
+        "git": {
+          "m": "#e0af68 Bold",
+          "d": "#B48EAD Bold",
+          "u": "#9ece6a Bold"
+        },
+        "exe": {
+          "icon": "#f7768e",
+          "name": "",
+          "indicator": "#f7768e"
+        },
+        "excluded": "#FFFFFF",
+        "size": "#cfc9c2",
+        "tree": "#565f89",
+        "user": "#565f89",
+        "group": "#565f89",
+        "date": "#565f89",
+        "dirName": "#b4f9f8 Bold",
+        "fileName": "#FFFFFF Bold",
+        "dirIcon": "#b4f9f8",
+        "fileIcon": "#FFFFFF",
+        "dirLinkIcon": "#FFFFFF",
+        "dirLinkName": "#FFFFFF",
+        "hiddenDirIcon": "#FFFFFF",
+        "hiddenDirName": "#FFFFFF",
+        "hiddenFileIcon": "#FFFFFF",
+        "hiddenFileName": "#FFFFFF",
+        "exeIndicator": "#FFFFFF",
+        "folderIndicator": "#FFFFFF"
       }
     }
   }

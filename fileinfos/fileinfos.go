@@ -54,7 +54,7 @@ func (i *Item) Icon() (string, *iconizer.Icon_Info) {
 			return "", iconizer.Icon_Def["hiddendir"]
 		}
 
-		return "", iconizer.Icon_Def["diropen"]
+		return "", iconizer.Icon_Def["dir"]
 	} else {
 		icon, exists := iconizer.Icon_FileName[strings.ToLower(i.Name)]
 		if exists {

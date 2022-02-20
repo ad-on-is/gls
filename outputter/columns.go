@@ -126,7 +126,7 @@ func name(item *fileinfos.Item, theme *settings.Theme, showSymlink bool) (string
 		exclOut = colorizer.Parse(" (excluded)", theme.Colors.Excluded)
 	}
 
-	return icnOut + "\u2800", nameOut, linkOut, exclOut
+	return icnOut + " \u2800", nameOut, linkOut, exclOut
 
 }
 

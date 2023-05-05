@@ -10,7 +10,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"syscall"
 	"time"
 
@@ -169,48 +168,40 @@ func traverse(path string, all *bool, excludeDirs *[]string, maxLevel int, level
 
 	sort.Slice(files, func(i, j int) bool { return strings.ToLower(files[i]) < strings.ToLower(files[j]) })
 
-	wg := sync.WaitGroup{}
-
 	for _, dn := range files {
-		wg.Add(1)
-		go func(dn string) {
-			file, err := os.Lstat(path + "/" + dn)
-			if err != nil {
-				fmt.Println(err.Error())
-				return
-			}
-			if !*all && strings.HasPrefix(file.Name(), ".") {
-				return
-			}
 
-			item := getItem(&file, path)
-			if (file).Mode()&os.ModeSymlink != 0 {
-				getLinkItem(item)
-			}
-			sort.Strings(*excludeDirs)
-			exclude := false
-			i := sort.SearchStrings(*excludeDirs, file.Name())
-			if i < len(*excludeDirs) && (*excludeDirs)[i] == file.Name() {
-				exclude = true
-			}
-			if !exclude {
-				if item.IsDir && cl <= maxLevel {
-					tPath := item.Root + item.Name
-					if item.IsLink {
-						tPath = item.Root + item.Link
-					}
-					item.Children = traverse(tPath, all, excludeDirs, maxLevel, &cl)
+		file, err := os.Lstat(path + "/" + dn)
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+		if !*all && strings.HasPrefix(file.Name(), ".") {
+			continue
+		}
+
+		item := getItem(&file, path)
+		if (file).Mode()&os.ModeSymlink != 0 {
+			getLinkItem(item)
+		}
+		sort.Strings(*excludeDirs)
+		exclude := false
+		i := sort.SearchStrings(*excludeDirs, file.Name())
+		if i < len(*excludeDirs) && (*excludeDirs)[i] == file.Name() {
+			exclude = true
+		}
+		if !exclude {
+			if item.IsDir && cl <= maxLevel {
+				tPath := item.Root + item.Name
+				if item.IsLink {
+					tPath = item.Root + item.Link
 				}
-			} else {
-				item.Excluded = true
+				item.Children = traverse(tPath, all, excludeDirs, maxLevel, &cl)
 			}
-			items = append(items, *item)
-
-		}(dn)
-
+		} else {
+			item.Excluded = true
+		}
+		items = append(items, *item)
 	}
-
-	wg.Wait()
 
 	return &items
 }
